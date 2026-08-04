@@ -1,0 +1,67 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PostCover from '../../components/PostCover.astro';
+import { getCollection } from 'astro:content';
+import { getReadingTime } from '../../lib/reading-time';
+
+const entries = (await getCollection('til', ({ data }) => !data.draft || !import.meta.env.PROD)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const monthFormat = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' });
+const dayFormat = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
+
+type Group = { label: string; entries: typeof entries };
+
+const groups: Group[] = [];
+for (const entry of entries) {
+  const label = monthFormat.format(entry.data.date);
+  let group = groups.find((g) => g.label === label);
+  if (!group) {
+    group = { label, entries: [] };
+    groups.push(group);
+  }
+  group.entries.push(entry);
+}
+---
+
+<Layout title="TIL" description="Short daily notes on voice AI, RAG, and agentic workflows.">
+  <header class="hero">
+    <p class="eyebrow">Daily log</p>
+    <h1>Today I Learned</h1>
+    <p class="page-intro">Short notes, logged as they happen, grouped by month.</p>
+  </header>
+
+  {
+    groups.length === 0 ? (
+      <p class="empty-state">No TIL notes yet.</p>
+    ) : (
+      groups.map((group) => (
+        <section>
+          <h2 class="month-heading">{group.label}</h2>
+          <ul class="story-list">
+            {group.entries.map((entry) => (
+              <li>
+                <a class="story-row" href={`/til/${entry.id}`}>
+                  <div class="story-content">
+                    <p class="story-meta-top">
+                      <span class="badge badge-til">TIL</span>
+                      <span class="meta-dot">&middot;</span>
+                      <span>{dayFormat.format(entry.data.date)}</span>
+                    </p>
+                    <h3 class="story-title">{entry.data.title}</h3>
+                    <p class="story-excerpt">{entry.data.description}</p>
+                    <p class="story-footer">
+                      <span class="reading-time">{getReadingTime(entry.body ?? '')} min read</span>
+                    </p>
+                  </div>
+                  <PostCover seed={entry.id} tags={entry.data.tags} class="story-thumb story-thumb--sm" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    )
+  }
+</Layout>

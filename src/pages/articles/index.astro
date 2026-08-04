@@ -1,0 +1,95 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PostCover from '../../components/PostCover.astro';
+import { getCollection } from 'astro:content';
+import { getReadingTime } from '../../lib/reading-time';
+
+const entries = (await getCollection('articles', ({ data }) => !data.draft || !import.meta.env.PROD)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const allTags = [...new Set(entries.flatMap((entry) => entry.data.tags))].sort();
+
+const dateFormat = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+---
+
+<Layout title="Articles" description="Long-form articles on AI product management, voice AI, RAG, and agentic workflows.">
+  <header class="hero">
+    <p class="eyebrow">Writing</p>
+    <h1>Articles</h1>
+    <p class="page-intro">Long-form pieces on AI product management, voice AI, RAG, and agentic workflows.</p>
+  </header>
+
+  {
+    allTags.length > 0 && (
+      <ul class="tag-list" id="tag-filters">
+        <li><button class="tag active" data-tag="all" type="button">All</button></li>
+        {allTags.map((tag) => (
+          <li><button class="tag" data-tag={tag} type="button">{tag}</button></li>
+        ))}
+      </ul>
+    )
+  }
+
+  {
+    entries.length === 0 ? (
+      <p class="empty-state">No articles yet.</p>
+    ) : (
+      <ul class="story-list" id="article-list">
+        {entries.map((entry) => (
+          <li data-tags={entry.data.tags.join(',')}>
+            <a class="story-row" href={`/articles/${entry.id}`}>
+              <div class="story-content">
+                <p class="story-meta-top">
+                  <span>{dateFormat.format(entry.data.date)}</span>
+                </p>
+                <h3 class="story-title">{entry.data.title}</h3>
+                <p class="story-excerpt">{entry.data.description}</p>
+                <p class="story-footer">
+                  <span class="author-avatar">TK</span>
+                  <span>Tabassum Khanum</span>
+                  <span class="meta-dot">&middot;</span>
+                  <span class="reading-time">{getReadingTime(entry.body ?? '')} min read</span>
+                </p>
+              </div>
+              <PostCover seed={entry.id} tags={entry.data.tags} class="story-thumb" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+  <p class="empty-state" id="no-results" style="display:none;">No articles match this filter.</p>
+</Layout>
+
+<script>
+  const filterList = document.getElementById('tag-filters');
+  const items = Array.from(document.querySelectorAll<HTMLElement>('#article-list > li'));
+  const noResults = document.getElementById('no-results');
+
+  function applyTag(tag: string) {
+    filterList?.querySelectorAll('button').forEach((btn) => {
+      btn.classList.toggle('active', (btn as HTMLElement).dataset.tag === tag);
+    });
+    let visibleCount = 0;
+    items.forEach((item) => {
+      const tags = (item.getAttribute('data-tags') ?? '').split(',');
+      const visible = tag === 'all' || tags.includes(tag);
+      item.style.display = visible ? '' : 'none';
+      if (visible) visibleCount++;
+    });
+    if (noResults) (noResults as HTMLElement).style.display = visibleCount === 0 ? '' : 'none';
+  }
+
+  filterList?.addEventListener('click', (event) => {
+    const button = (event.target as HTMLElement).closest('button[data-tag]') as HTMLButtonElement | null;
+    if (!button) return;
+    applyTag(button.dataset.tag ?? 'all');
+  });
+
+  const params = new URLSearchParams(location.search);
+  const initialTag = params.get('tag');
+  if (initialTag) {
+    applyTag(initialTag);
+  }
+</script>

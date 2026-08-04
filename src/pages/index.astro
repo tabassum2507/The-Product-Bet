@@ -1,0 +1,236 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PostCover from '../components/PostCover.astro';
+import { getCollection } from 'astro:content';
+import { getReadingTime } from '../lib/reading-time';
+import { humanizeTag } from '../lib/tags';
+
+const articleEntries = await getCollection('articles', ({ data }) => !data.draft || !import.meta.env.PROD);
+const tilEntries = await getCollection('til', ({ data }) => !data.draft || !import.meta.env.PROD);
+
+type Post = {
+  kind: 'article' | 'til';
+  id: string;
+  title: string;
+  date: Date;
+  description: string;
+  tags: string[];
+  href: string;
+  readingTime: number;
+};
+
+const posts: Post[] = [
+  ...articleEntries.map((entry) => ({
+    kind: 'article' as const,
+    id: entry.id,
+    title: entry.data.title,
+    date: entry.data.date,
+    description: entry.data.description,
+    tags: entry.data.tags,
+    href: `/articles/${entry.id}`,
+    readingTime: getReadingTime(entry.body ?? ''),
+  })),
+  ...tilEntries.map((entry) => ({
+    kind: 'til' as const,
+    id: entry.id,
+    title: entry.data.title,
+    date: entry.data.date,
+    description: entry.data.description,
+    tags: entry.data.tags,
+    href: `/til/${entry.id}`,
+    readingTime: getReadingTime(entry.body ?? ''),
+  })),
+].sort((a, b) => b.date.valueOf() - a.date.valueOf());
+
+const dateFormat = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+function categoryLabel(post: Post): string {
+  return humanizeTag(post.tags[0] ?? (post.kind === 'article' ? 'article' : 'til'));
+}
+
+const featured = posts[0] ?? null;
+
+const articlePosts = posts.filter((p) => p.kind === 'article');
+const tilPosts = posts.filter((p) => p.kind === 'til');
+
+const gridArticles = articlePosts.filter((p) => p.id !== featured?.id).slice(0, 3);
+
+const quickReads = tilPosts.slice(0, 8);
+
+const CATEGORY_DEFS = [
+  { tag: 'ai-product-management', icon: 'pm' as const },
+  { tag: 'voice-ai', icon: 'voice' as const },
+  { tag: 'rag', icon: 'rag' as const },
+  { tag: 'agentic-workflows', icon: 'agentic' as const },
+];
+
+const categories = CATEGORY_DEFS.map((c) => ({
+  ...c,
+  label: humanizeTag(c.tag),
+  count: posts.filter((p) => p.tags.includes(c.tag)).length,
+}));
+
+---
+
+<Layout title="The Product Bet">
+  <header class="hero">
+    <p class="eyebrow">Welcome</p>
+    <h1>The Product Bet</h1>
+    <p class="page-intro">
+      Long-form thinking on AI product management, voice AI, and RAG, plus short daily notes on
+      whatever broke or clicked that day.
+    </p>
+  </header>
+
+  {
+    posts.length === 0 ? (
+      <p class="empty-state">No posts yet.</p>
+    ) : (
+      <>
+        {featured && (
+          <a href={featured.href} class="feature-hero" aria-label={`Read ${featured.title}`}>
+            <div class="feature-hero-media">
+              <PostCover seed={featured.id} tags={featured.tags} />
+            </div>
+            <div class="feature-hero-body">
+              <div class="feature-hero-badges">
+                <span class="badge badge-featured">Featured</span>
+                <span class="badge badge-til">{categoryLabel(featured)}</span>
+              </div>
+              <h2 class="feature-hero-title">{featured.title}</h2>
+              <p class="feature-hero-excerpt">{featured.description}</p>
+              <p class="feature-hero-meta">
+                <span class="author-avatar">TK</span>
+                <span>Tabassum Khanum</span>
+                <span class="meta-dot">&middot;</span>
+                <span>{dateFormat.format(featured.date)}</span>
+                <span class="meta-dot">&middot;</span>
+                <span class="reading-time">{featured.readingTime} min read</span>
+              </p>
+            </div>
+          </a>
+        )}
+
+        {categories.length > 0 && (
+          <section>
+            <h2 class="section-heading">Explore by Topic</h2>
+            <p class="section-sub">Jump straight to the kind of problem you're trying to solve.</p>
+            <ul class="category-tiles">
+              {categories.map((cat) => (
+                <li>
+                  <a class="category-tile" href={`/articles?tag=${cat.tag}`}>
+                    <span class="category-tile-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        {cat.icon === 'rag' && (
+                          <>
+                            <ellipse cx="12" cy="5" rx="8" ry="3" />
+                            <path d="M4 5v6c0 1.66 3.58 3 8 3s8-1.34 8-3V5" />
+                            <path d="M4 11v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6" />
+                          </>
+                        )}
+                        {cat.icon === 'voice' && (
+                          <>
+                            <rect x="9" y="2" width="6" height="12" rx="3" />
+                            <path d="M5 10a7 7 0 0 0 14 0" />
+                            <path d="M12 17v4M8 21h8" />
+                          </>
+                        )}
+                        {cat.icon === 'agentic' && (
+                          <>
+                            <circle cx="5" cy="6" r="2.5" />
+                            <circle cx="19" cy="6" r="2.5" />
+                            <circle cx="12" cy="18" r="2.5" />
+                            <path d="M7 7.5 10 16M17 7.5 14 16M7.5 6h9" />
+                          </>
+                        )}
+                        {cat.icon === 'pm' && (
+                          <>
+                            <circle cx="12" cy="12" r="8" />
+                            <circle cx="12" cy="12" r="4" />
+                            <circle cx="12" cy="12" r="0.5" fill="currentColor" />
+                          </>
+                        )}
+                      </svg>
+                    </span>
+                    <span class="category-tile-name">{cat.label}</span>
+                    <span class="category-tile-count">
+                      {cat.count} post{cat.count === 1 ? '' : 's'}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {gridArticles.length > 0 && (
+          <section>
+            <h2 class="section-heading">Latest Articles</h2>
+            <p class="section-sub">Long-form pieces on the systems behind AI products.</p>
+            <ul class="grid-3col">
+              {gridArticles.map((post) => (
+                <li>
+                  <a class="grid-card" href={post.href}>
+                    <PostCover seed={post.id} tags={post.tags} />
+                    <div class="grid-card-body">
+                      <span class="badge badge-til">{categoryLabel(post)}</span>
+                      <h3 class="grid-card-title">{post.title}</h3>
+                      <p class="grid-card-desc">{post.description}</p>
+                    </div>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <div class="section-footer">
+              <a class="btn btn-secondary" href="/articles">View all articles</a>
+            </div>
+          </section>
+        )}
+
+        {quickReads.length > 0 && (
+          <section>
+            <h2 class="section-heading">Quick Reads</h2>
+            <p class="section-sub">Short TIL notes, logged as they happen.</p>
+            <ul class="story-list">
+              {quickReads.map((post) => (
+                <li>
+                  <a class="story-row" href={post.href}>
+                    <div class="story-content">
+                      <p class="story-meta-top">
+                        <span class="badge badge-til">TIL</span>
+                        <span class="meta-dot">&middot;</span>
+                        <span>{dateFormat.format(post.date)}</span>
+                      </p>
+                      <h3 class="story-title">{post.title}</h3>
+                      <p class="story-excerpt">{post.description}</p>
+                      <p class="story-footer">
+                        <span class="reading-time">{post.readingTime} min read</span>
+                      </p>
+                    </div>
+                    <PostCover seed={post.id} tags={post.tags} class="story-thumb story-thumb--sm" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <div class="section-footer">
+              <a class="btn btn-secondary" href="/til">View all TIL notes</a>
+            </div>
+          </section>
+        )}
+      </>
+    )
+  }
+
+  <section class="newsletter-band">
+    <div class="wrap newsletter-inner">
+      <div>
+        <h2>Subscribe to our newsletter</h2>
+        <p>Get new articles and TIL notes in your inbox. No spam, unsubscribe anytime.</p>
+      </div>
+      <form class="newsletter-form" onsubmit="event.preventDefault();">
+        <input type="email" placeholder="Your email address" aria-label="Email address" required />
+        <button type="submit">Subscribe</button>
+      </form>
+    </div>
+  </section>
+</Layout>
