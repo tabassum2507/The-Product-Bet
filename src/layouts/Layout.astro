@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import Logo from '../components/Logo.astro';
 
 interface Props {
   title: string;
@@ -32,6 +33,7 @@ const ogImageURL = new URL(image ?? '/og-default.png', Astro.site);
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script is:inline>
       (function () {
         var stored = localStorage.getItem('theme');
@@ -70,7 +72,7 @@ const ogImageURL = new URL(image ?? '/og-default.png', Astro.site);
     <header class="site-header">
       <div class="wrap header-inner">
         <a class="brand" href="/" aria-label={`${SITE_NAME} — home`}>
-          <span class="logo-mark" aria-hidden="true">TK</span>
+          <Logo />
           <span class="site-title">{SITE_NAME}</span>
         </a>
         <div class="header-right">
@@ -126,7 +128,7 @@ const ogImageURL = new URL(image ?? '/og-default.png', Astro.site);
         <div class="footer-top">
           <div class="footer-brand">
             <a class="brand" href="/" aria-label={`${SITE_NAME} — home`}>
-              <span class="logo-mark" aria-hidden="true">TK</span>
+              <Logo />
               <span class="site-title">{SITE_NAME}</span>
             </a>
             <p class="footer-tagline">Notes on AI product management, voice AI, RAG, and agentic workflows.</p>
