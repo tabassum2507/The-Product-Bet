@@ -1,14 +1,47 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const hasPhoto = fs.existsSync(path.join(process.cwd(), 'public/images/tee.jpg'));
 ---
 
-<Layout title="About" description="About this site.">
+<Layout
+  title="About"
+  description="The Product Bet is a blog about tech product management, voice AI products, and moving from engineering into product."
+  narrow
+>
   <header class="hero">
     <p class="eyebrow">About</p>
-    <h1>About</h1>
-    <p class="page-intro">
-      This is a placeholder About page. Replace this with a bio covering your background in AI
-      product management, voice AI, RAG, and agentic workflows, plus links to your socials and contact info.
-    </p>
+    <h1>Hi, I'm Tee</h1>
   </header>
+  <article class="prose">
+    {hasPhoto && <img src="/images/tee.jpg" alt="Tee" width="160" height="160" class="about-photo" />}
+
+    <p>
+      I'm a product manager. I've worked on B2B SaaS, voice AI agents, and enterprise mobile
+      products, and I came into product from an engineering background.
+    </p>
+    <p>
+      The Product Bet is where I write about what I'm learning on the job: shipping voice AI
+      products, the engineer-to-PM transition, and the everyday craft of product management. Most
+      posts are things I wish someone had told me a year earlier.
+    </p>
+    <p>I publish one post a week. If that sounds useful, subscribe below and it'll land in your inbox.</p>
+
+    <h2>What I write about</h2>
+    <ul>
+      <li>Voice AI products — what actually breaks, and which metrics matter</li>
+      <li>Engineer to PM — what transfers, what doesn't, and how to make the move</li>
+      <li>Building in public — build logs from my side projects</li>
+      <li>PM craft — PRDs, prioritisation, and interviews</li>
+    </ul>
+
+    <h2>Elsewhere</h2>
+    <ul>
+      <li><a href="https://tabassumkhanum.in" target="_blank" rel="noopener noreferrer">Portfolio</a></li>
+      <li><a href="https://linkedin.com/in/tabassum-khanum" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+      <li><a href="https://github.com/tabassum2507" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+    </ul>
+  </article>
 </Layout>
