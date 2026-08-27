@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import PostCover from '../../components/PostCover.astro';
+import Subscribe from '../../components/Subscribe.astro';
 import { getCollection, render } from 'astro:content';
 import { getReadingTime } from '../../lib/reading-time';
 
@@ -77,4 +78,6 @@ const dateFormat = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numer
       </ul>
     )
   }
+
+  <Subscribe />
 </Layout>
