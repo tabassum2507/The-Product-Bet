@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import PostCover from '../components/PostCover.astro';
+import Subscribe from '../components/Subscribe.astro';
 import { getCollection } from 'astro:content';
 import { getReadingTime } from '../lib/reading-time';
 import { humanizeTag } from '../lib/tags';
@@ -221,16 +222,5 @@ const categories = CATEGORY_DEFS.map((c) => ({
     )
   }
 
-  <section class="newsletter-band">
-    <div class="wrap newsletter-inner">
-      <div>
-        <h2>Subscribe to our newsletter</h2>
-        <p>Get new articles and TIL notes in your inbox. No spam, unsubscribe anytime.</p>
-      </div>
-      <form class="newsletter-form" onsubmit="event.preventDefault();">
-        <input type="email" placeholder="Your email address" aria-label="Email address" required />
-        <button type="submit">Subscribe</button>
-      </form>
-    </div>
-  </section>
+  <Subscribe />
 </Layout>

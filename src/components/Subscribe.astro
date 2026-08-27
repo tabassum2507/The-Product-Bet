@@ -1,7 +1,5 @@
 ---
-// Replace this action URL with your Buttondown embed endpoint,
-// e.g. https://buttondown.com/api/emails/embed-subscribe/YOUR_USERNAME
-const SUBSCRIBE_ACTION = 'https://buttondown.com/api/emails/embed-subscribe/REPLACE_ME';
+const SUBSCRIBE_ACTION = 'https://buttondown.com/api/emails/embed-subscribe/khanum';
 ---
 
 <section class="newsletter-band">
@@ -10,7 +8,7 @@ const SUBSCRIBE_ACTION = 'https://buttondown.com/api/emails/embed-subscribe/REPL
       <h2>Subscribe to the newsletter</h2>
       <p>Get new articles and TIL notes in your inbox. No spam, unsubscribe anytime.</p>
     </div>
-    <form class="newsletter-form" action={SUBSCRIBE_ACTION} method="post" target="_blank">
+    <form class="newsletter-form" action={SUBSCRIBE_ACTION} method="POST" target="_blank">
       <input type="email" name="email" placeholder="Your email address" aria-label="Email address" required />
       <button type="submit">Subscribe</button>
     </form>
