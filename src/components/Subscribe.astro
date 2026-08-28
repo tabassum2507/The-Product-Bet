@@ -6,10 +6,38 @@ const SUBSCRIBE_ACTION = 'https://buttondown.com/api/emails/embed-subscribe/khan
   <div class="wrap newsletter-inner">
     <h2>Subscribe to the newsletter</h2>
     <p>Get new articles and TIL notes in your inbox.</p>
-    <form class="newsletter-form" action={SUBSCRIBE_ACTION} method="POST" target="_blank">
+    <form id="subscribe-form" class="newsletter-form" action={SUBSCRIBE_ACTION} method="POST" target="_blank">
       <input type="email" name="email" placeholder="Your email address" aria-label="Email address" required />
       <button type="submit">Subscribe</button>
     </form>
-    <p class="newsletter-fineprint">One post a week. Unsubscribe anytime.</p>
+    <p id="subscribe-status" class="newsletter-fineprint" role="status" aria-live="polite">One post a week. Unsubscribe anytime.</p>
   </div>
 </section>
+
+<script is:inline>
+  (function () {
+    var form = document.getElementById('subscribe-form');
+    var status = document.getElementById('subscribe-status');
+    if (!form || !status) return;
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var button = form.querySelector('button');
+      button.disabled = true;
+
+      fetch(form.getAttribute('action'), {
+        method: 'POST',
+        mode: 'no-cors',
+        body: new FormData(form),
+      })
+        .then(function () {
+          status.textContent = 'Thanks! Check your inbox to confirm.';
+          form.remove();
+        })
+        .catch(function () {
+          status.textContent = 'Something went wrong — try again.';
+          button.disabled = false;
+        });
+    });
+  })();
+</script>
