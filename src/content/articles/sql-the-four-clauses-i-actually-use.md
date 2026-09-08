@@ -1,0 +1,16 @@
+---
+title: "SELECT, JOIN, GROUP BY, HAVING — the four I actually use every week"
+date: 2026-08-31T19:29:00+05:30
+tags: ["sql", "analytics"]
+description: "I avoided writing my own SQL for years by asking analysts for numbers, until the wait for a simple query got embarrassing enough to just learn it."
+---
+
+I used to Slack an analyst almost every week for numbers I could have pulled myself in under a minute, and I kept doing it because learning SQL felt like a bigger investment than it turned out to be. What finally pushed me was waiting two days for a number I needed in an hour, watching the analyst's queue, and realizing the actual query, once she sent it over, was maybe six lines I could have written myself if I'd just sat down for an afternoon at some point in the previous two years.
+
+SELECT and FROM are the obvious starting point, which columns, from which table, and most tutorials stop belaboring those quickly because they're genuinely simple. JOIN is where it started actually mattering for my work, because almost nothing useful lives in one table, a user's plan type is in one table, their usage events are in another, and JOIN is how you combine rows across them based on a shared key, like a user ID. The distinction between an inner join, which only returns rows that match in both tables, and a left join, which keeps every row from the first table even if there's no match in the second, tripped me up longer than it should have, because getting it backwards silently drops or duplicates rows without throwing any error, which is a much scarier kind of wrong than a query that just fails outright.
+
+GROUP BY is where SQL stopped being about retrieving rows and started being about actually answering questions, because it collapses many rows into one per group, letting you compute something per bucket, average handle time per agent, count of cancellations per plan type per month, rather than a flat list of individual rows you'd have to eyeball and tally yourself. HAVING is the one that confused me longest, because it looks like WHERE and does something similar, filter rows, but WHERE filters before grouping happens and HAVING filters after, on the aggregated result, so "show me agents with more than fifty calls this month" needs HAVING, because "more than fifty" only exists as a concept after the grouping and counting has already happened, there's no fifty to compare against on any individual row.
+
+The failure mode I fell into while learning this, and I think it's common, was writing a query that ran without error and looked plausible, then trusting the number without sanity-checking it against something I already roughly knew. I once pulled a churn number using an inner join where a left join was needed, silently dropping customers who had no matching row in a secondary table, users who'd never logged a single event, which happened to be the exact segment most likely to actually churn. The number looked clean and was meaningfully wrong in a direction nobody would catch just by glancing at it.
+
+What I do differently now, every time, is cross-check a new query's output against a number I can verify some other way, a dashboard total, a rough gut estimate, before treating the result as real. SQL doesn't tell you when the logic is wrong, it only tells you when the syntax is.

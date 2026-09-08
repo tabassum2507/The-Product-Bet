@@ -1,0 +1,16 @@
+---
+title: "Monitoring tells you something broke, observability tells you why"
+date: 2026-09-06T21:17:00+05:30
+tags: ["system-design", "technical-pm"]
+description: "Our dashboards were all green the morning a customer told us the voice agent had been giving wrong answers for two days, and that gap is the whole point."
+---
+
+A customer emailed asking why the churn-rescue agent had confidently quoted the wrong cancellation policy for what turned out to be two full days, and when I pulled up our monitoring dashboard, everything was green, uptime fine, error rate fine, latency fine. The system hadn't crashed once. It had just been quietly, confidently wrong, in a way none of our alerts were built to catch, because none of them were watching for that.
+
+Monitoring, in the way I'd been using our dashboards, is mostly about known failure states, is the service up, is the error rate above some threshold, is latency within bounds. It's built around questions you thought to ask in advance, and it's genuinely good at catching the failures you anticipated. What it structurally can't catch is a failure mode you didn't think to define a check for, and "the agent is citing the wrong policy" was never going to trip an uptime alert, because from the system's point of view, it responded successfully, quickly, with a well-formed answer. Nothing about that looks like an incident to a dashboard built around known failure signatures.
+
+Observability is the broader idea that you've instrumented the system well enough to ask new questions after the fact, ones you didn't anticipate needing to ask, using logs, traces, and detailed event data, rather than only the small set of metrics you predefined. The practical difference showed up the moment we actually tried to debug the wrong-policy issue, monitoring told us nothing was wrong, and it took someone manually pulling raw conversation logs, a genuinely slow, manual process, to find that a knowledge base update two days earlier had introduced a stale document that the retrieval step kept surfacing. An observable system, one with good structured logging tying each response back to exactly which source document it pulled from, would have let us query that connection directly instead of manually reading transcripts one at a time hunting for a pattern.
+
+The tradeoff is mostly upfront cost and discipline, good observability means logging structured, detailed data at every step, deliberately, before you know which piece of it you'll need later, which takes real engineering time and storage that doesn't pay off until the day you actually need to ask an unanticipated question. It's tempting to skip, because monitoring alone looks sufficient right up until the exact moment it demonstrably isn't, which is usually also the worst possible moment to discover the gap.
+
+What changed for us after that incident wasn't just adding a new alert for policy staleness, that only covers the one failure we already know about now. It was making sure every agent response logs which source document and which model version produced it, so the next unanticipated question, whatever it turns out to be, has a chance of being answerable from data instead of from someone manually rereading transcripts at ten at night.

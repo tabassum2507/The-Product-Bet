@@ -1,0 +1,16 @@
+---
+title: "Authentication, and why I stopped saying 'just use OAuth'"
+date: 2026-08-26T19:54:00+05:30
+tags: ["technical-pm", "interview-prep"]
+description: "I used OAuth as a catch-all answer to any authentication question for a while, until a security review made me actually explain what it does."
+---
+
+For a stretch, my answer to almost any authentication question in a spec review was some version of "we'll just use OAuth," said with the confidence of someone who'd heard the term a lot without being able to describe what problem it actually solves versus what problem it doesn't. A security-minded engineer in a review finally asked me directly what OAuth was protecting against in our specific case, and I realized I was using it as a synonym for "secure login" rather than the specific thing it actually is.
+
+OAuth is an authorization protocol, not an authentication one, which is a distinction I'd been glossing over. It's about a user granting a third-party app limited access to their data on another service, without handing over their password, the "log in with Google" flow, or an integration that reads your calendar without ever seeing your Google password directly. That's a real and useful thing, but it's a different problem from "how do we verify this is actually the person they claim to be when they log into our own product," which is authentication, and which OAuth doesn't inherently solve on its own, even though it's often bundled into flows that also handle authentication as a byproduct.
+
+Once I separated those, a bunch of other terms I'd been fuzzy on made more sense in relation to each other. Authentication is proving identity, password, biometric, a one-time code. Authorization is what an authenticated identity is allowed to do, which resources, which actions. Session management is how the system remembers you're authenticated across multiple requests without re-checking a password every time, usually a token or cookie with some expiry. Multi-factor is adding a second, independent proof of identity on top of the first, so a compromised password alone isn't enough. Four different problems that get casually lumped into "login," and treating them as one thing is exactly how you end up, like I did, saying "use OAuth" to a question that was actually about session expiry policy.
+
+The tradeoff that actually matters at the product level, more than picking the right protocol name, is between friction and risk tolerance for a specific action. Requiring MFA on every login reduces account takeover risk and also measurably reduces conversion at signup, real users abandon flows over an extra step, especially first-time users who don't yet trust you enough to tolerate friction. The right call depends on what's actually at stake behind that login, a free content account and a payment settings page don't deserve the same friction budget, and treating "authentication" as one uniform decision instead of a set of choices that should vary by risk is the mistake underneath my old "just use OAuth" reflex.
+
+I still don't love implementing this stuff, but I can at least ask a specific enough question now instead of reaching for a protocol name as a stand-in for an actual decision.

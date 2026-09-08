@@ -1,0 +1,16 @@
+---
+title: "Docker finally made sense once I stopped thinking of it as a VM"
+date: 2026-08-30T22:22:00+05:30
+tags: ["technical-pm", "learning-in-public"]
+description: "I called a container a lightweight virtual machine for a full year before an engineer corrected me mid-sentence, and the correction actually mattered."
+---
+
+I called a Docker container "basically a lightweight VM" in a planning conversation, casually, the way you repeat something you half-understood once and never revisited. An engineer stopped me, not unkindly, and said that's a common description but it's actually wrong in a way that matters, and then explained why, and I've been slightly annoyed at myself since for not asking sooner given how many times I'd used that exact phrase with confidence.
+
+A virtual machine virtualizes hardware, it runs a full separate operating system on top of a hypervisor, complete kernel and all, which is why VMs are heavy, slow to start, and consume a meaningful chunk of resources just existing. A container doesn't virtualize hardware at all, it virtualizes the operating system layer, all containers on a host share the same underlying kernel, and what's actually isolated is the process's view of the filesystem, network, and resources. That's why containers start in milliseconds instead of minutes and why you can run dozens of them on hardware that would struggle with a handful of VMs, they're not simulating a whole separate computer, they're a more isolated kind of process.
+
+Coming from embedded work, the analogy that finally made this click for me wasn't a computing one, it was closer to how a single microcontroller can run multiple tasks under an RTOS, each task believing it has its own execution context, while they're all actually sharing the same underlying hardware and scheduler. Containers are that idea applied at the OS level, shared kernel underneath, isolated-feeling processes on top, rather than genuinely separate machines the way VMs are.
+
+Why this distinction is a real product question and not just engineering trivia: it changes what "environment parity" actually promises you. Docker's whole pitch, works the same in dev as in production, is true about the application and its dependencies, because the container packages those precisely, but it's not automatically true about anything that depends on the underlying kernel or host-level resource limits, which is a gap I've seen bite a team that assumed "it's containerized" meant "environment differences are fully solved," and then hit a production-only bug traceable to a kernel-level difference between their dev machines and the production host.
+
+The tradeoff with containers versus VMs is really isolation strength versus overhead. VMs give you a harder security and resource boundary because there's no shared kernel to exploit across tenants, which matters more in genuinely multi-tenant, security-sensitive contexts. Containers give you speed and density at the cost of a thinner isolation boundary. Most product decisions don't need to litigate that tradeoff directly, the infra team already has, but knowing it exists is the difference between nodding along in a conversation like the one I had, and actually following what an engineer is weighing when they push back on a deployment approach.
