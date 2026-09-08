@@ -1,9 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import fs from 'node:fs';
-import path from 'node:path';
-
-const hasPhoto = fs.existsSync(path.join(process.cwd(), 'public/images/tee.jpg'));
 ---
 
 <Layout
@@ -16,7 +12,7 @@ const hasPhoto = fs.existsSync(path.join(process.cwd(), 'public/images/tee.jpg')
     <h1>Hi, I'm Tee</h1>
   </header>
   <article class="prose">
-    {hasPhoto && <img src="/images/tee.jpg" alt="Tee" width="160" height="160" class="about-photo" />}
+    <img src="/brand/portrait.jpg" alt="Portrait of Tee" width="280" height="280" class="portrait-frame portrait-frame--lg" />
 
     <p>
       I'm a product manager. I've worked on B2B SaaS, voice AI agents, and enterprise mobile

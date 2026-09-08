@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Logo from '../components/Logo.astro';
+import SocialLinks from '../components/SocialLinks.astro';
 
 interface Props {
   title: string;
@@ -28,14 +29,16 @@ const {
 
 const pageTitle = title === SITE_NAME ? SITE_NAME : `${title} · ${SITE_NAME}`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const ogImageURL = new URL(image ?? '/og-default.png', Astro.site);
+const ogImageURL = new URL(image ?? '/brand/logo-circle.png', Astro.site);
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png" />
     <script is:inline>
       (function () {
         var stored = localStorage.getItem('theme');
@@ -52,7 +55,7 @@ const ogImageURL = new URL(image ?? '/og-default.png', Astro.site);
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400..900;1,400..900&family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <title>{pageTitle}</title>
@@ -93,30 +96,7 @@ const ogImageURL = new URL(image ?? '/og-default.png', Astro.site);
             <a href="/articles">Articles</a>
             <a href="/about">About</a>
           </nav>
-          <ul class="header-social">
-            <li>
-              <a href="https://tabassumkhanum.in" target="_blank" rel="noopener noreferrer" aria-label="Portfolio">
-                <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20M12 2a15.3 15.3 0 0 0 0 20"></path>
-                </svg>
-              </a>
-            </li>
-            <li>
-              <a href="https://github.com/tabassum2507" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-                <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                  <path d="M12 .5C5.73.5.98 5.24.98 11.52c0 5.02 3.26 9.28 7.78 10.78.57.1.78-.25.78-.55v-2.15c-3.16.69-3.83-1.36-3.83-1.36-.52-1.31-1.26-1.66-1.26-1.66-1.03-.7.08-.69.08-.69 1.14.08 1.74 1.17 1.74 1.17 1.01 1.73 2.65 1.23 3.3.94.1-.73.4-1.23.72-1.51-2.52-.29-5.17-1.26-5.17-5.6 0-1.24.44-2.25 1.17-3.04-.12-.29-.51-1.45.11-3.02 0 0 .96-.31 3.14 1.16a10.9 10.9 0 0 1 5.72 0c2.18-1.47 3.14-1.16 3.14-1.16.62 1.57.23 2.73.11 3.02.73.79 1.17 1.8 1.17 3.04 0 4.35-2.66 5.31-5.19 5.59.41.35.77 1.04.77 2.1v3.11c0 .3.21.66.79.55A11.03 11.03 0 0 0 23.02 11.5C23.02 5.24 18.27.5 12 .5z"></path>
-                </svg>
-              </a>
-            </li>
-            <li>
-              <a href="https://linkedin.com/in/tabassum-khanum" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                  <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"></path>
-                </svg>
-              </a>
-            </li>
-          </ul>
+          <SocialLinks class="header-social" />
           <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode">
             <svg class="icon icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="4"></circle>
@@ -135,74 +115,13 @@ const ogImageURL = new URL(image ?? '/og-default.png', Astro.site);
       </div>
     </main>
     <footer class="site-footer">
-      <div class="wrap">
-        <div class="footer-top">
-          <div class="footer-brand">
-            <a class="brand" href="/" aria-label={`${SITE_NAME} — home`}>
-              <Logo />
-              <span class="site-title">{SITE_NAME}</span>
-            </a>
-            <p class="footer-tagline">Notes on AI product management, voice AI, RAG, and agentic workflows.</p>
-            <ul class="footer-links">
-              <li>
-                <a href="https://tabassumkhanum.in" target="_blank" rel="noopener noreferrer">
-                  <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20M12 2a15.3 15.3 0 0 0 0 20"></path>
-                  </svg>
-                  Portfolio
-                </a>
-              </li>
-              <li>
-                <a href="https://github.com/tabassum2507" target="_blank" rel="noopener noreferrer">
-                  <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                    <path d="M12 .5C5.73.5.98 5.24.98 11.52c0 5.02 3.26 9.28 7.78 10.78.57.1.78-.25.78-.55v-2.15c-3.16.69-3.83-1.36-3.83-1.36-.52-1.31-1.26-1.66-1.26-1.66-1.03-.7.08-.69.08-.69 1.14.08 1.74 1.17 1.74 1.17 1.01 1.73 2.65 1.23 3.3.94.1-.73.4-1.23.72-1.51-2.52-.29-5.17-1.26-5.17-5.6 0-1.24.44-2.25 1.17-3.04-.12-.29-.51-1.45.11-3.02 0 0 .96-.31 3.14 1.16a10.9 10.9 0 0 1 5.72 0c2.18-1.47 3.14-1.16 3.14-1.16.62 1.57.23 2.73.11 3.02.73.79 1.17 1.8 1.17 3.04 0 4.35-2.66 5.31-5.19 5.59.41.35.77 1.04.77 2.1v3.11c0 .3.21.66.79.55A11.03 11.03 0 0 0 23.02 11.5C23.02 5.24 18.27.5 12 .5z"></path>
-                  </svg>
-                  GitHub
-                </a>
-              </li>
-              <li>
-                <a href="https://linkedin.com/in/tabassum-khanum" target="_blank" rel="noopener noreferrer">
-                  <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                    <path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"></path>
-                  </svg>
-                  LinkedIn
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div class="footer-columns">
-            <div class="footer-col">
-              <h3>Explore</h3>
-              <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/articles">Articles</a></li>
-                <li><a href="/about">About</a></li>
-                <li><a href="/contact">Contact</a></li>
-              </ul>
-            </div>
-            <div class="footer-col">
-              <h3>Categories</h3>
-              <ul>
-                <li><a href="/articles?tag=rag">RAG</a></li>
-                <li><a href="/articles?tag=voice-ai">Voice AI</a></li>
-                <li><a href="/articles?tag=agentic-workflows">Agentic Workflows</a></li>
-                <li><a href="/articles?tag=ai-product-management">AI Product Management</a></li>
-              </ul>
-            </div>
-            <div class="footer-col">
-              <h3>Resources</h3>
-              <ul>
-                <li><a href="/rss.xml">RSS Feed</a></li>
-                <li><a href="/sitemap-index.xml">Sitemap</a></li>
-                <li><a href="/privacy">Privacy Policy</a></li>
-                <li><a href="/disclosure">Disclosure</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <div class="footer-bottom">
-          <p class="footer-copy">&copy; {new Date().getFullYear()} Tabassum Khanum. All rights reserved.</p>
+      <svg class="footer-wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,32 C240,60 480,4 720,22 C960,40 1200,64 1440,26 L1440,60 L0,60 Z" />
+      </svg>
+      <div class="footer-band">
+        <div class="wrap footer-inner">
+          <p class="footer-tagline-caps">Simple ideas.<br />Real product thinking.</p>
+          <SocialLinks class="footer-social" />
         </div>
       </div>
     </footer>

@@ -55,14 +55,14 @@ const categories = CATEGORY_DEFS.map((c) => ({
 ---
 
 <Layout title="The Product Bet">
-  <header class="hero">
-    <p class="eyebrow">Welcome</p>
-    <h1>The Product Bet</h1>
-    <p class="page-intro">
-      Long-form thinking on AI product management, voice AI, and RAG, plus short daily notes on
-      whatever broke or clicked that day.
-    </p>
-  </header>
+  <section class="home-hero">
+    <div class="home-hero-text">
+      <h1>I'm Tee. I build AI and voice products, and I write down what I learn here.</h1>
+    </div>
+    <div class="home-hero-portrait">
+      <img src="/brand/portrait.jpg" alt="Portrait of Tee" width="220" height="220" class="portrait-frame" />
+    </div>
+  </section>
 
   {
     posts.length === 0 ? (

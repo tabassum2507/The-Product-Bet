@@ -2,7 +2,6 @@
 import Layout from '../../layouts/Layout.astro';
 import Subscribe from '../../components/Subscribe.astro';
 import { getCollection, render } from 'astro:content';
-import { getReadingTime } from '../../lib/reading-time';
 
 export async function getStaticPaths() {
   const entries = (await getCollection('articles', ({ data }) => !data.draft || !import.meta.env.PROD)).sort(
@@ -21,7 +20,6 @@ export async function getStaticPaths() {
 
 const { entry, prev, next } = Astro.props;
 const { Content } = await render(entry);
-const readingTime = getReadingTime(entry.body ?? '');
 
 const dateFormat = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 ---
@@ -37,9 +35,11 @@ const dateFormat = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numer
   <a class="back-link" href="/articles">&larr; All articles</a>
   <span class="badge badge-article badge-standalone">Article</span>
   <h1>{entry.data.title}</h1>
-  <p class="post-meta">
-    {dateFormat.format(entry.data.date)}
-    <span class="reading-time">{readingTime} min read</span>
+  <p class="post-byline">
+    <img src="/brand/logo-circle.png" alt="" width="28" height="28" class="post-byline-avatar" aria-hidden="true" />
+    <span class="post-byline-name">Tee</span>
+    <span class="meta-dot">&middot;</span>
+    <span>{dateFormat.format(entry.data.date)}</span>
   </p>
   {
     entry.data.tags.length > 0 && (
