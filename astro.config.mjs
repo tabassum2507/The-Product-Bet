@@ -3,7 +3,11 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://blog.tabassumkhanum.in',
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      filter: (page) => !/\/til(\/|$)/.test(new URL(page).pathname),
+    }),
+  ],
   markdown: {
     shikiConfig: {
       themes: {

@@ -4,11 +4,9 @@ import { getCollection } from 'astro:content';
 
 export async function GET(context: APIContext) {
   const articles = await getCollection('articles', ({ data }) => !data.draft || !import.meta.env.PROD);
-  const til = await getCollection('til', ({ data }) => !data.draft || !import.meta.env.PROD);
 
   const items = [
     ...articles.map((entry) => ({ entry, path: `/articles/${entry.id}/` })),
-    ...til.map((entry) => ({ entry, path: `/til/${entry.id}/` })),
   ].sort((a, b) => b.entry.data.date.valueOf() - a.entry.data.date.valueOf());
 
   return rss({

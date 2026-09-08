@@ -1,6 +1,5 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import PostCover from '../../components/PostCover.astro';
 import Subscribe from '../../components/Subscribe.astro';
 import { getCollection, render } from 'astro:content';
 import { getReadingTime } from '../../lib/reading-time';
@@ -36,7 +35,6 @@ const dateFormat = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numer
   narrow
 >
   <a class="back-link" href="/til">&larr; All TIL notes</a>
-  <PostCover seed={entry.id} tags={entry.data.tags} class="cover-banner" />
   <span class="badge badge-til badge-standalone">TIL</span>
   <h1>{entry.data.title}</h1>
   <p class="post-meta">

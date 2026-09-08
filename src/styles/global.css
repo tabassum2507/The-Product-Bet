@@ -365,17 +365,6 @@ h2 {
   color: var(--color-cover-icon);
 }
 
-.cover-banner {
-  aspect-ratio: 3 / 1;
-  border-radius: var(--radius-md);
-  margin-bottom: 1.5rem;
-}
-
-.cover-banner .cover-icon {
-  width: 15%;
-  height: 15%;
-}
-
 /* story list: shared row pattern for homepage, articles, and TIL listings */
 
 .story-list {
@@ -963,10 +952,6 @@ footer.site-footer {
   border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
 }
 
-.feature-hero-media .cover {
-  border-radius: var(--radius-md);
-}
-
 .feature-hero-body {
   display: flex;
   flex-direction: column;
@@ -1021,8 +1006,6 @@ footer.site-footer {
 
 @media (min-width: 780px) {
   .feature-hero {
-    grid-template-columns: 1.1fr 1fr;
-    align-items: center;
     padding: 2rem;
   }
 }
@@ -1132,10 +1115,6 @@ footer.site-footer {
   transform: translateY(-4px);
   box-shadow: var(--shadow-card-hover);
   border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
-}
-
-.grid-card .cover {
-  border-radius: 0;
 }
 
 .grid-card-body {

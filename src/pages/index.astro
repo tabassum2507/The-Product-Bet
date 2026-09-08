@@ -1,16 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import PostCover from '../components/PostCover.astro';
 import Subscribe from '../components/Subscribe.astro';
 import { getCollection } from 'astro:content';
 import { getReadingTime } from '../lib/reading-time';
 import { humanizeTag } from '../lib/tags';
 
 const articleEntries = await getCollection('articles', ({ data }) => !data.draft || !import.meta.env.PROD);
-const tilEntries = await getCollection('til', ({ data }) => !data.draft || !import.meta.env.PROD);
 
 type Post = {
-  kind: 'article' | 'til';
   id: string;
   title: string;
   date: Date;
@@ -20,9 +17,8 @@ type Post = {
   readingTime: number;
 };
 
-const posts: Post[] = [
-  ...articleEntries.map((entry) => ({
-    kind: 'article' as const,
+const posts: Post[] = articleEntries
+  .map((entry) => ({
     id: entry.id,
     title: entry.data.title,
     date: entry.data.date,
@@ -30,33 +26,18 @@ const posts: Post[] = [
     tags: entry.data.tags,
     href: `/articles/${entry.id}`,
     readingTime: getReadingTime(entry.body ?? ''),
-  })),
-  ...tilEntries.map((entry) => ({
-    kind: 'til' as const,
-    id: entry.id,
-    title: entry.data.title,
-    date: entry.data.date,
-    description: entry.data.description,
-    tags: entry.data.tags,
-    href: `/til/${entry.id}`,
-    readingTime: getReadingTime(entry.body ?? ''),
-  })),
-].sort((a, b) => b.date.valueOf() - a.date.valueOf());
+  }))
+  .sort((a, b) => b.date.valueOf() - a.date.valueOf());
 
 const dateFormat = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
 function categoryLabel(post: Post): string {
-  return humanizeTag(post.tags[0] ?? (post.kind === 'article' ? 'article' : 'til'));
+  return humanizeTag(post.tags[0] ?? 'article');
 }
 
 const featured = posts[0] ?? null;
 
-const articlePosts = posts.filter((p) => p.kind === 'article');
-const tilPosts = posts.filter((p) => p.kind === 'til');
-
-const gridArticles = articlePosts.filter((p) => p.id !== featured?.id).slice(0, 3);
-
-const quickReads = tilPosts.slice(0, 8);
+const gridArticles = posts.filter((p) => p.id !== featured?.id).slice(0, 3);
 
 const CATEGORY_DEFS = [
   { tag: 'ai-product-management', icon: 'pm' as const },
@@ -90,9 +71,6 @@ const categories = CATEGORY_DEFS.map((c) => ({
       <>
         {featured && (
           <a href={featured.href} class="feature-hero" aria-label={`Read ${featured.title}`}>
-            <div class="feature-hero-media">
-              <PostCover seed={featured.id} tags={featured.tags} />
-            </div>
             <div class="feature-hero-body">
               <div class="feature-hero-badges">
                 <span class="badge badge-featured">Featured</span>
@@ -172,7 +150,6 @@ const categories = CATEGORY_DEFS.map((c) => ({
               {gridArticles.map((post) => (
                 <li>
                   <a class="grid-card" href={post.href}>
-                    <PostCover seed={post.id} tags={post.tags} />
                     <div class="grid-card-body">
                       <span class="badge badge-til">{categoryLabel(post)}</span>
                       <h3 class="grid-card-title">{post.title}</h3>
@@ -184,37 +161,6 @@ const categories = CATEGORY_DEFS.map((c) => ({
             </ul>
             <div class="section-footer">
               <a class="btn btn-secondary" href="/articles">View all articles</a>
-            </div>
-          </section>
-        )}
-
-        {quickReads.length > 0 && (
-          <section>
-            <h2 class="section-heading">Quick Reads</h2>
-            <p class="section-sub">Short TIL notes, logged as they happen.</p>
-            <ul class="story-list">
-              {quickReads.map((post) => (
-                <li>
-                  <a class="story-row" href={post.href}>
-                    <div class="story-content">
-                      <p class="story-meta-top">
-                        <span class="badge badge-til">TIL</span>
-                        <span class="meta-dot">&middot;</span>
-                        <span>{dateFormat.format(post.date)}</span>
-                      </p>
-                      <h3 class="story-title">{post.title}</h3>
-                      <p class="story-excerpt">{post.description}</p>
-                      <p class="story-footer">
-                        <span class="reading-time">{post.readingTime} min read</span>
-                      </p>
-                    </div>
-                    <PostCover seed={post.id} tags={post.tags} class="story-thumb story-thumb--sm" />
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <div class="section-footer">
-              <a class="btn btn-secondary" href="/til">View all TIL notes</a>
             </div>
           </section>
         )}

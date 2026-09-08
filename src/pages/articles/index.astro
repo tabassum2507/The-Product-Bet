@@ -1,6 +1,5 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import PostCover from '../../components/PostCover.astro';
 import { getCollection } from 'astro:content';
 import { getReadingTime } from '../../lib/reading-time';
 
@@ -52,7 +51,6 @@ const dateFormat = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'nume
                   <span class="reading-time">{getReadingTime(entry.body ?? '')} min read</span>
                 </p>
               </div>
-              <PostCover seed={entry.id} tags={entry.data.tags} class="story-thumb" />
             </a>
           </li>
         ))}
